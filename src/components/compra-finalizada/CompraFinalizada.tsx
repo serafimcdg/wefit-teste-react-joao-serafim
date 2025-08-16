@@ -21,8 +21,8 @@ export default function CompraFinalizada({
 
       {imageSrc && (
         <S.ImgHolder>
-          <Image src={imageSrc} alt={imageAlt} width={100} height={294} priority   style={{ maxHeight: 300, width: '100px', height: 'auto', objectFit: 'contain' }}
- />
+          <Image src={imageSrc} alt={imageAlt} width={100} height={294} priority style={{ maxHeight: 300, width: '100px', height: 'auto', objectFit: 'contain' }}
+          />
         </S.ImgHolder>
       )}
 

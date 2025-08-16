@@ -17,12 +17,12 @@ export default function Home() {
   const hide = useLoadingStore((s) => s.hide);
 
   const [filmes, setFilmes] = useState<IFilme[]>([]);
-  const [loaded, setLoaded] = useState(false); 
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let unmounted = false;
 
-    show(); 
+    show();
     const ctrl = new AbortController();
 
     const timeoutId = setTimeout(() => {
@@ -38,16 +38,16 @@ export default function Home() {
         .finally(() => {
           if (!unmounted) {
             setLoaded(true);
-            hide();          
+            hide();
           }
         });
-    }, 1000); 
+    }, 1000);
 
     return () => {
       unmounted = true;
       clearTimeout(timeoutId);
       ctrl.abort();
-      hide(); 
+      hide();
     };
   }, [show, hide]);
 

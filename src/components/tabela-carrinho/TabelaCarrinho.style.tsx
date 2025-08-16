@@ -114,8 +114,11 @@ export const QuantidadeCasse = styled.div`
   display: inline-flex;
   gap: 8px;
   align-items: center;
-  justify-content: flex-start; 
+  justify-content: flex-start;
+  overflow: visible;     
+  isolation: isolate;
 `;
+
 
 export const Pill = styled.span`
   min-width: 70px; height: 28px; padding: 0 6px;
@@ -125,12 +128,34 @@ export const Pill = styled.span`
   color: #0f172a; background: #fff;
 `;
 
+
 export const Round = styled.button`
-  width: 24px; height: 24px; border-radius: 999px;
-  display: grid; place-items: center; cursor: pointer;
-  transition: background .15s ease;
+  position: relative;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  img { pointer-events: none; }
+
+  @media (max-width: 900px) {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 44px; height: 44px;    
+      transform: translate(-50%, -50%);
+    }
+  }
+
   &:hover { background: rgba(25,145,235,.08); }
 `;
+
 
 export const Subtotal = styled.span`
   font-family: var(--font-open-sans), system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -313,8 +338,9 @@ export const UnitPrice = styled.span`
 
 export const SubtotalBlock = styled.div`
   display: grid;
-  justify-items: end;  
+  justify-items: start;  
   text-align: right;
+  font-weight: bold;
 
   span {
     font: 700 12px/1 var(--font-open-sans), system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;

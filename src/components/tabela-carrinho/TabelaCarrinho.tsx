@@ -66,7 +66,7 @@ export default function CartTable({
                 <tfoot>
                     <tr>
                         <S.Td colSpan={2}><S.FinishBtn onClick={onCheckout}>FINALIZAR PEDIDO</S.FinishBtn></S.Td>
-                        <S.Td className="right" colSpan={2}><S.Total><span>TOTAL</span><strong>{brl(total)}</strong></S.Total></S.Td>
+                        <S.Td className="right" colSpan={2}><S.Total ><span>TOTAL</span><strong>{brl(total)}</strong></S.Total></S.Td>
                     </tr>
                 </tfoot>
             </S.Table>
