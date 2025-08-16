@@ -2,52 +2,78 @@ import type { IFilme } from "@/interfaces/Filme.interface";
 
 const DATA_CARRINHO = "wemovies:carrinho";
 
-export function addFilmeCarrinho(filme: IFilme): void {
-    const current: IFilme[] = JSON.parse(sessionStorage.getItem(DATA_CARRINHO) || "[]");
+const ambienteNavegador =
+  typeof window !== "undefined" && typeof sessionStorage !== "undefined";
 
-    const index = current.findIndex((item) => item.id === filme.id);
-    if (index >= 0) {
-        current[index].quantidade = (current[index].quantidade ?? 0) + 1;
-    } else {
-        current.push({ ...filme, quantidade: 1 });
-    }
-    sessionStorage.setItem(DATA_CARRINHO, JSON.stringify(current));
-    window.dispatchEvent(new Event('cart:update'));
-
+function idsIguais(a: unknown, b: unknown) {
+  return String(a) === String(b);
 }
 
-
-export function getCarrinhoData(): IFilme[] {
-    return JSON.parse(sessionStorage.getItem(DATA_CARRINHO) || "[]");
+function parseSeguro<T>(texto: string | null, padrao: T): T {
+  if (!texto) return padrao;
+  try {
+    return JSON.parse(texto) as T;
+  } catch {
+    return padrao;
+  }
 }
 
-
-export function limpaFilmesCarrinho(id: number): void {
-    const current: IFilme[] = JSON.parse(sessionStorage.getItem(DATA_CARRINHO) || "[]");
-    const updated = current.filter((item) => item.id !== id);
-    sessionStorage.setItem(DATA_CARRINHO, JSON.stringify(updated));
+function lerCarrinho(): IFilme[] {
+  if (!ambienteNavegador) return [];
+  return parseSeguro<IFilme[]>(sessionStorage.getItem(DATA_CARRINHO), []);
 }
 
-
-
-export function setNotificacaoCarrinho(cart: IFilme[]): void {
-  sessionStorage.setItem(DATA_CARRINHO, JSON.stringify(cart));
+function setCarrinho(carrinho: IFilme[]): void {
+  if (!ambienteNavegador) return;
+  sessionStorage.setItem(DATA_CARRINHO, JSON.stringify(carrinho));
   window.dispatchEvent(new Event("cart:update"));
 }
 
-export function removeUnidadeFilmeCarrinho(id: number): void {
-  const current: IFilme[] = JSON.parse(sessionStorage.getItem(DATA_CARRINHO) || "[]");
-  const idx = current.findIndex((i) => i.id === id);
-  if (idx === -1) return;
+export function addFilmeCarrinho(filme: IFilme): void {
+  const atual = lerCarrinho();
+  const idx = atual.findIndex((item) => idsIguais(item.id, filme.id));
 
-  const nextQuantidade = Math.max(1, Number(current[idx].quantidade) - 1 || 1);
-  current[idx].quantidade = nextQuantidade;
+  if (idx >= 0) {
+    const qtd = Number(atual[idx].quantidade ?? 0);
+    atual[idx].quantidade = (Number.isFinite(qtd) ? qtd : 0) + 1;
+  } else {
+    atual.push({ ...filme, quantidade: 1 });
+  }
 
-  setNotificacaoCarrinho(current);
+  setCarrinho(atual);
 }
 
-export function limpaFilmesCarrinhoNotifica(id: number): void {
-  const current: IFilme[] = JSON.parse(sessionStorage.getItem(DATA_CARRINHO) || "[]");
-  const updated = current.filter((item) => item.id !== id);
-  setNotificacaoCarrinho(updated);
+export function getCarrinhoData(): IFilme[] {
+  return lerCarrinho();
+}
+
+export function limpaFilmesCarrinho(id: number | string): void {
+  const atual = lerCarrinho();
+  const atualizado = atual.filter((item) => !idsIguais(item.id, id));
+  setCarrinho(atualizado);
+}
+
+export function setNotificacaoCarrinho(carrinho: IFilme[]): void {
+  setCarrinho(carrinho);
+}
+
+export function removeUnidadeFilmeCarrinho(id: number | string): void {
+  const atual = lerCarrinho();
+  const idx = atual.findIndex((i) => idsIguais(i.id, id));
+  if (idx === -1) return;
+
+  const qtd = Number(atual[idx].quantidade ?? 0);
+  const proxima = (Number.isFinite(qtd) ? qtd : 0) - 1;
+
+  if (proxima > 0) {
+    atual[idx].quantidade = proxima;
+  } else {
+    atual.splice(idx, 1);
+  }
+
+  setCarrinho(atual);
+}
+
+export function limpaFilmesCarrinhoNotifica(id: number | string): void {
+  limpaFilmesCarrinho(id);
 }
