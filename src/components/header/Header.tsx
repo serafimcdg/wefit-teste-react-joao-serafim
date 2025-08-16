@@ -64,7 +64,7 @@ export default function Header({ cartCount }: Readonly<IHeaderProps>) {
             onClick={handleVaiParaCarrinho}
             style={{ cursor: 'pointer' }}
           >
-            <Image src="/ico.svg" alt="Carrinho" width={40} height={40} />
+            <Image src="/carrinho-shop.svg" alt="Carrinho" width={40} height={40} />
           </S.CartIcon>
         </S.Right>
       </S.Inner>
